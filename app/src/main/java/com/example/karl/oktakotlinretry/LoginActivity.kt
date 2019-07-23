@@ -1,6 +1,5 @@
 package com.example.karl.oktakotlinretry
 
-import android.app.PendingIntent
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -41,12 +40,13 @@ class LoginActivity : AppCompatActivity() {
 
     fun onUserLogin(result: Response<LoginResponse>) {
 
-        credentials = result.body()!!._embedded.user
+        credentials = result.body()!!.data.user
 
         Log.v("LoginActivity", "success")
 
         val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.putExtra("UserId", credentials!!.id)
+        mainIntent.putExtra("BusinessId", "00uoudimbcBaMgXYj356")
 
         startActivity(mainIntent)
 

@@ -7,16 +7,16 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
-interface MovieApiClient {
+interface MenuApiClient {
 
-    @GET("api/menu") fun getMovies(@Header("Authorization") token:String): Observable<MovieEmbedded>
-    @POST("api/menu") fun addMovie(@Body movie: Movie): Completable
-    @DELETE("api/menu/{id}") fun deleteMovie(@Path("id") id: Int) : Completable
-    @PUT("api/menu/{id}") fun updateMovie(@Path("id")id: Int, @Body movie: Movie) : Completable
+    @GET("api/menu") fun get(@Header("UserId") token: String): Observable<List<MenuItem>>
+    @POST("api/menu") fun add(@Header("UserId") token: String, @Body item: MenuItem): Completable
+    @DELETE("api/menu/{id}") fun delete(@Path("id") id: Long) : Completable
+    @PUT("api/menu/{id}") fun update(@Path("id")id: Long, @Body item: MenuItem) : Completable
 
     companion object {
 
-        fun create(): MovieApiClient {
+        fun create(): MenuApiClient {
 
             val retrofit = Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -24,7 +24,7 @@ interface MovieApiClient {
                     .baseUrl("http://192.168.0.18:8080/")
                     .build()
 
-            return retrofit.create(MovieApiClient::class.java)
+            return retrofit.create(MenuApiClient::class.java)
         }
     }
 }

@@ -13,19 +13,22 @@ import android.widget.Toast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.list_item.view.*
+import android.app.Activity
 
-class MovieAdapter(val context: Context, val token: String?) :
-        RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
 
-    val client by lazy { MovieApiClient.create() }
-    var movies: ArrayList<Movie> = ArrayList()
 
-    init { refreshMovies() }
+class MenuAdapter(val activity: MainActivity) :
+        RecyclerView.Adapter<MenuAdapter.MovieViewHolder>() {
+
+    val client by lazy { MenuApiClient.create() }
+    var items: ArrayList<MenuItem> = ArrayList()
+
+    init { refresh() }
 
     class MovieViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MovieAdapter.MovieViewHolder {
+                                    viewType: Int): MenuAdapter.MovieViewHolder {
 
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_item, parent, false)
@@ -34,63 +37,63 @@ class MovieAdapter(val context: Context, val token: String?) :
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.view.name.text = movies[position].name
-        holder.view.btnDelete.setOnClickListener { showDeleteDialog(holder, movies[position]) }
-        holder.view.btnEdit.setOnClickListener { showUpdateDialog(holder, movies[position]) }
+        holder.view.name.text = items[position].name
+        holder.view.btnDelete.setOnClickListener { showDeleteDialog(holder, items[position]) }
+        holder.view.btnEdit.setOnClickListener { showUpdateDialog(holder, items[position]) }
     }
 
-    override fun getItemCount() = movies.size
+    override fun getItemCount() = items.size
 
-    fun refreshMovies() {
-        client.getMovies("Bearer $token")
+    fun refresh() {
+        client.get(activity.businessId!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result ->
-                            movies.clear()
-                            movies.addAll(result.list.movies)
+                            items.clear()
+                            items.addAll(result)
                             notifyDataSetChanged()
                         },
                         { error ->
-                            Toast.makeText(context, "Refresh error: ${error.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(activity.baseContext, "Refresh error: ${error.message}", Toast.LENGTH_LONG).show()
                             Log.e("ERRORS", error.message)
                         }
                 )
     }
 
-    fun updateMovie(movie: Movie) {
-        client.updateMovie(movie.id, movie)
+    fun update(item: MenuItem) {
+        client.update(item.id, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ refreshMovies() }, { throwable ->
-                    Toast.makeText(context, "Update error: ${throwable.message}", Toast.LENGTH_LONG).show()
+                .subscribe({ refresh() }, { throwable ->
+                    Toast.makeText(activity.baseContext, "Update error: ${throwable.message}", Toast.LENGTH_LONG).show()
                 }
                 )
     }
 
-    fun addMovie(movie: Movie) {
-        client.addMovie(movie)
+    fun add(item: MenuItem) {
+        client.add(activity.businessId!!, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ refreshMovies() }, { throwable ->
-                    Toast.makeText(context, "Add error: ${throwable.message}", Toast.LENGTH_LONG).show()
+                .subscribe({ refresh() }, { throwable ->
+                    Toast.makeText(activity.baseContext, "Add error: ${throwable.message}", Toast.LENGTH_LONG).show()
                 }
                 )
     }
 
-    fun deleteMovie(movie: Movie) {
+    fun delete(item: MenuItem) {
 
-        client.deleteMovie(movie.id)
+        client.delete(item.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ refreshMovies() }, { throwable ->
-                    Toast.makeText(context, "Delete error: ${throwable.message}", Toast.LENGTH_LONG).show()
+                .subscribe({ refresh() }, { throwable ->
+                    Toast.makeText(activity.baseContext, "Delete error: ${throwable.message}", Toast.LENGTH_LONG).show()
                 }
                 )
 
     }
 
-    fun showUpdateDialog(holder: MovieViewHolder, movie: Movie) {
+    fun showUpdateDialog(holder: MovieViewHolder, movie: MenuItem) {
         val dialogBuilder = AlertDialog.Builder(holder.view.context)
 
         val input = EditText(holder.view.context)
@@ -104,7 +107,7 @@ class MovieAdapter(val context: Context, val token: String?) :
 
         dialogBuilder.setTitle("Update Movie")
         dialogBuilder.setPositiveButton("Update", { dialog, whichButton ->
-            updateMovie(Movie(movie.id,input.text.toString()))
+            update(MenuItem(movie.id,input.text.toString()))
         })
         dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
             dialog.cancel()
@@ -113,12 +116,12 @@ class MovieAdapter(val context: Context, val token: String?) :
         b.show()
     }
 
-    fun showDeleteDialog(holder: MovieViewHolder, movie: Movie) {
+    fun showDeleteDialog(holder: MovieViewHolder, movie: MenuItem) {
         val dialogBuilder = AlertDialog.Builder(holder.view.context)
         dialogBuilder.setTitle("Delete")
         dialogBuilder.setMessage("Confirm delete?")
         dialogBuilder.setPositiveButton("Delete", { dialog, whichButton ->
-            deleteMovie(movie)
+            delete(movie)
         })
         dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
             dialog.cancel()

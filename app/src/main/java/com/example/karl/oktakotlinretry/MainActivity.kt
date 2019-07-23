@@ -15,7 +15,10 @@ import net.openid.appauth.AuthState
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var adapter:MovieAdapter
+    var userId: String? = null
+    var businessId: String? = null
+
+    lateinit var adapter:MenuAdapter
 
     fun readAuthState(): AuthState {
         val authPrefs = getSharedPreferences("OktaAppAuthState", Context.MODE_PRIVATE)
@@ -36,7 +39,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        adapter = MovieAdapter(this.baseContext, readAuthState().accessToken)
+        userId = intent.getStringExtra("UserId")
+        businessId = intent.getStringExtra("BusinessId")
+
+
+        adapter = MenuAdapter(this)
 
         rv_item_list.layoutManager = LinearLayoutManager(this)
         rv_item_list.adapter = adapter
@@ -52,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.refresh -> {
-            adapter.refreshMovies()
+            adapter.refresh()
             Toast.makeText(this.baseContext, "Refreshed", Toast.LENGTH_LONG).show()
             true
         }
@@ -75,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         dialogBuilder.setTitle("New Movie")
         dialogBuilder.setMessage("Enter Name Below")
         dialogBuilder.setPositiveButton("Save", { dialog, whichButton ->
-            adapter.addMovie(Movie(0,input.text.toString()))
+            adapter.add(MenuItem(0,input.text.toString()))
         })
         dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
             //pass
