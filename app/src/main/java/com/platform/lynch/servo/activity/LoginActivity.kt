@@ -1,30 +1,19 @@
-package com.example.karl.oktakotlinretry
+package com.platform.lynch.servo.activity
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.Button
-import kotlinx.android.synthetic.main.activity_login.*
 import com.okta.appauth.android.OktaAppAuth
-import net.openid.appauth.AuthorizationException
-import java.lang.reflect.Field
 
-import com.okta.sdk.authc.credentials.TokenClientCredentials
-import com.okta.sdk.client.Client
-import com.okta.sdk.client.Clients
-import com.okta.sdk.resource.ResourceException
-import android.R.string.ok
 import android.widget.Toast
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.platform.lynch.servo.*
+import com.platform.lynch.servo.model.LoginApiClient
+import com.platform.lynch.servo.model.LoginResponse
+import com.platform.lynch.servo.model.User
+import com.platform.lynch.servo.model.UserInfo
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import java.util.Arrays.asList
-import com.okta.sdk.resource.user.UserBuilder
-import com.okta.sdk.resource.user.User
-import org.json.JSONObject
 
 import retrofit2.Response
 

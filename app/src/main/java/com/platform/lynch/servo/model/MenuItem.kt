@@ -1,8 +1,8 @@
-package com.example.karl.oktakotlinretry
+package com.platform.lynch.servo.model
 
 import com.google.gson.annotations.SerializedName
 
-data class MenuItem( val id: Long, val name: String )
+data class MenuItem( val id: Long, val name: String, val price: String )
 data class MenuList (
         //@SerializedName("movies" )
         val items: List<MenuItem>

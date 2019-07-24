@@ -1,6 +1,5 @@
-package com.example.karl.oktakotlinretry
+package com.platform.lynch.servo.adapter
 
-import android.content.Context
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -10,42 +9,49 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.platform.lynch.servo.activity.MainActivity
+import com.platform.lynch.servo.model.MenuApiClient
+import com.platform.lynch.servo.model.MenuItem
+import com.platform.lynch.servo.R
+import com.platform.lynch.servo.model.Ticket
+import com.platform.lynch.servo.model.TicketApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.list_item.view.*
-import android.app.Activity
-
 
 
 class MenuAdapter(val activity: MainActivity) :
-        RecyclerView.Adapter<MenuAdapter.MovieViewHolder>() {
+        RecyclerView.Adapter<MenuAdapter.MenuViewHolder>() {
 
-    val client by lazy { MenuApiClient.create() }
+    val menuClient by lazy { MenuApiClient.create() }
+    val ticketClient by lazy { TicketApiClient.create() }
     var items: ArrayList<MenuItem> = ArrayList()
 
     init { refresh() }
 
-    class MovieViewHolder(val view: View) : RecyclerView.ViewHolder(view)
+    class MenuViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): MenuAdapter.MovieViewHolder {
+                                    viewType: Int): MenuViewHolder {
 
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_item, parent, false)
 
-        return MovieViewHolder(view)
+        return MenuViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MenuViewHolder, position: Int) {
         holder.view.name.text = items[position].name
-        holder.view.btnDelete.setOnClickListener { showDeleteDialog(holder, items[position]) }
-        holder.view.btnEdit.setOnClickListener { showUpdateDialog(holder, items[position]) }
+        holder.view.price.text = items[position].price
+        holder.view.btnAdd.setOnClickListener { showAddDialog(holder, items[position]) }
+        //holder.view.btnDelete.setOnClickListener { showDeleteDialog(holder, items[position]) }
+        //holder.view.btnEdit.setOnClickListener { showUpdateDialog(holder, items[position]) }
     }
 
     override fun getItemCount() = items.size
 
     fun refresh() {
-        client.get(activity.businessId!!)
+        menuClient.get(activity.businessId!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -62,7 +68,7 @@ class MenuAdapter(val activity: MainActivity) :
     }
 
     fun update(item: MenuItem) {
-        client.update(item.id, item)
+        menuClient.update(item.id, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -72,7 +78,7 @@ class MenuAdapter(val activity: MainActivity) :
     }
 
     fun add(item: MenuItem) {
-        client.add(activity.businessId!!, item)
+        menuClient.add(activity.businessId!!, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -83,7 +89,7 @@ class MenuAdapter(val activity: MainActivity) :
 
     fun delete(item: MenuItem) {
 
-        client.delete(item.id)
+        menuClient.delete(item.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -93,7 +99,60 @@ class MenuAdapter(val activity: MainActivity) :
 
     }
 
-    fun showUpdateDialog(holder: MovieViewHolder, movie: MenuItem) {
+    fun placeOrder(item: Ticket) {
+
+        ticketClient.add(activity.userId!!, item)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        {
+                            refresh()
+                            Toast.makeText(activity.baseContext, "Order placed.", Toast.LENGTH_LONG).show()
+                        },
+                        { throwable ->
+                            Toast.makeText(activity.baseContext, "Order error: ${throwable.message}", Toast.LENGTH_LONG).show()
+                        }
+                )
+
+    }
+
+    fun showAddDialog(holder: MenuViewHolder, item: MenuItem) {
+        val dialogBuilder = AlertDialog.Builder(holder.view.context)
+
+        val layout = LinearLayout(holder.view.context)
+        layout.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+        layout.orientation = LinearLayout.VERTICAL
+
+        val inputQuantity = EditText(holder.view.context)
+        val inputOptions = EditText(holder.view.context)
+        inputQuantity.hint = "Quantity"
+        inputOptions.hint = "Options"
+        layout.addView(inputQuantity)
+        layout.addView(inputOptions)
+
+        dialogBuilder.setView(layout)
+
+
+        val ticket = Ticket(0,
+                activity.userId!!,
+                item.id,
+                inputQuantity.text.toString(),
+                inputOptions.text.toString(),
+                "",
+                "OPEN"
+                )
+
+        dialogBuilder.setTitle("Place Order: " + item.name)
+        dialogBuilder.setMessage(item.price)
+        dialogBuilder.setPositiveButton("Confirm", { dialog, whichButton -> placeOrder(ticket) })
+        dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton -> dialog.cancel() })
+        val b = dialogBuilder.create()
+        b.show()
+    }
+
+    fun showUpdateDialog(holder: MenuViewHolder, item: MenuItem) {
         val dialogBuilder = AlertDialog.Builder(holder.view.context)
 
         val input = EditText(holder.view.context)
@@ -101,13 +160,13 @@ class MenuAdapter(val activity: MainActivity) :
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT)
         input.layoutParams = lp
-        input.setText(movie.name)
+        input.setText(item.name)
 
         dialogBuilder.setView(input)
 
-        dialogBuilder.setTitle("Update Movie")
+        dialogBuilder.setTitle("Update Item")
         dialogBuilder.setPositiveButton("Update", { dialog, whichButton ->
-            update(MenuItem(movie.id,input.text.toString()))
+            update(MenuItem(item.id, input.text.toString(), item.price))
         })
         dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
             dialog.cancel()
@@ -116,12 +175,12 @@ class MenuAdapter(val activity: MainActivity) :
         b.show()
     }
 
-    fun showDeleteDialog(holder: MovieViewHolder, movie: MenuItem) {
+    fun showDeleteDialog(holder: MenuViewHolder, item: MenuItem) {
         val dialogBuilder = AlertDialog.Builder(holder.view.context)
         dialogBuilder.setTitle("Delete")
         dialogBuilder.setMessage("Confirm delete?")
         dialogBuilder.setPositiveButton("Delete", { dialog, whichButton ->
-            delete(movie)
+            delete(item)
         })
         dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
             dialog.cancel()

@@ -1,4 +1,4 @@
-package com.example.karl.oktakotlinretry
+package com.platform.lynch.servo.model
 
 import com.google.gson.annotations.SerializedName
 

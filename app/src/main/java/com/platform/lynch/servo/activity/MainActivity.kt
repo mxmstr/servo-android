@@ -1,4 +1,4 @@
-package com.example.karl.oktakotlinretry
+package com.platform.lynch.servo.activity
 
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
@@ -10,15 +10,19 @@ import android.view.MenuItem
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.platform.lynch.servo.R
+import com.platform.lynch.servo.adapter.MenuAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import net.openid.appauth.AuthState
+
+
 
 class MainActivity : AppCompatActivity() {
 
     var userId: String? = null
     var businessId: String? = null
 
-    lateinit var adapter:MenuAdapter
+    lateinit var menuAdapter: MenuAdapter
 
     fun readAuthState(): AuthState {
         val authPrefs = getSharedPreferences("OktaAppAuthState", Context.MODE_PRIVATE)
@@ -43,12 +47,12 @@ class MainActivity : AppCompatActivity() {
         businessId = intent.getStringExtra("BusinessId")
 
 
-        adapter = MenuAdapter(this)
+        menuAdapter = MenuAdapter(this)
 
         rv_item_list.layoutManager = LinearLayoutManager(this)
-        rv_item_list.adapter = adapter
+        rv_item_list.adapter = menuAdapter
 
-        fab.setOnClickListener{ showNewDialog() }
+        //fab.setOnClickListener{ showNewDialog() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -59,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.refresh -> {
-            adapter.refresh()
+            menuAdapter.refresh()
             Toast.makeText(this.baseContext, "Refreshed", Toast.LENGTH_LONG).show()
             true
         }
@@ -68,27 +72,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showNewDialog() {
-        val dialogBuilder = AlertDialog.Builder(this)
-
-        val input = EditText(this@MainActivity)
-        val lp = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT)
-        input.layoutParams = lp
-
-        dialogBuilder.setView(input)
-
-        dialogBuilder.setTitle("New Movie")
-        dialogBuilder.setMessage("Enter Name Below")
-        dialogBuilder.setPositiveButton("Save", { dialog, whichButton ->
-            adapter.add(MenuItem(0,input.text.toString()))
-        })
-        dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
-            //pass
-        })
-        val b = dialogBuilder.create()
-        b.show()
-    }
+//    fun showNewDialog() {
+//        val dialogBuilder = AlertDialog.Builder(this)
+//
+//        val layout = LinearLayout(this@MainActivity)
+//        layout.layoutParams = LinearLayout.LayoutParams(
+//                LinearLayout.LayoutParams.MATCH_PARENT,
+//                LinearLayout.LayoutParams.MATCH_PARENT)
+//        layout.orientation = LinearLayout.VERTICAL
+//
+//        val inputQuantity = EditText(this)
+//        val inputOptions = EditText(this)
+//        inputQuantity.hint = "Quantity"
+//        inputOptions.hint = "Options"
+//        layout.addView(inputQuantity)
+//        layout.addView(inputOptions)
+//
+//        dialogBuilder.setView(layout)
+//
+//
+//        dialogBuilder.setTitle("New Order")
+//        dialogBuilder.setMessage("Enter Name Below")
+//        dialogBuilder.setPositiveButton("Save", { dialog, whichButton ->
+//            //menuAdapter.add(com.platform.lynch.servo.model.MenuItem(0, layout.text.toString()))
+//        })
+//        dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
+//            //pass
+//        })
+//        val b = dialogBuilder.create()
+//        b.show()
+//    }
 
 }

@@ -1,4 +1,4 @@
-package com.example.karl.oktakotlinretry
+package com.platform.lynch.servo.model
 
 import io.reactivex.Completable
 import io.reactivex.Observable
