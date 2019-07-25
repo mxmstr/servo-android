@@ -1,5 +1,6 @@
 package com.platform.lynch.servo.adapter
 
+import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -17,10 +18,10 @@ import com.platform.lynch.servo.model.Ticket
 import com.platform.lynch.servo.model.TicketApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.list_item.view.*
+import kotlinx.android.synthetic.main.menu_item.view.*
 
 
-class MenuAdapter(val activity: MainActivity) :
+class MenuAdapter(val activity: FragmentActivity) :
         RecyclerView.Adapter<MenuAdapter.MenuViewHolder>() {
 
     val menuClient by lazy { MenuApiClient.create() }
@@ -35,7 +36,7 @@ class MenuAdapter(val activity: MainActivity) :
                                     viewType: Int): MenuViewHolder {
 
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.list_item, parent, false)
+                .inflate(R.layout.menu_item, parent, false)
 
         return MenuViewHolder(view)
     }
@@ -51,7 +52,7 @@ class MenuAdapter(val activity: MainActivity) :
     override fun getItemCount() = items.size
 
     fun refresh() {
-        menuClient.get(activity.businessId!!)
+        menuClient.get((activity as MainActivity)?.businessId!!)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -78,7 +79,7 @@ class MenuAdapter(val activity: MainActivity) :
     }
 
     fun add(item: MenuItem) {
-        menuClient.add(activity.businessId!!, item)
+        menuClient.add((activity as MainActivity).businessId!!, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -101,7 +102,7 @@ class MenuAdapter(val activity: MainActivity) :
 
     fun placeOrder(item: Ticket) {
 
-        ticketClient.add(activity.userId!!, item)
+        ticketClient.add((activity as MainActivity).userId!!, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -133,20 +134,19 @@ class MenuAdapter(val activity: MainActivity) :
         layout.addView(inputOptions)
 
         dialogBuilder.setView(layout)
-
-
-        val ticket = Ticket(0,
-                activity.userId!!,
-                item.id,
-                inputQuantity.text.toString(),
-                inputOptions.text.toString(),
-                "",
-                "OPEN"
-                )
-
         dialogBuilder.setTitle("Place Order: " + item.name)
         dialogBuilder.setMessage(item.price)
-        dialogBuilder.setPositiveButton("Confirm", { dialog, whichButton -> placeOrder(ticket) })
+        dialogBuilder.setPositiveButton("Confirm", { dialog, whichButton -> placeOrder(
+                Ticket(0,
+                    (activity as MainActivity).userId!!,
+                    item.id,
+                    item.name,
+                    inputQuantity.text.toString(),
+                    inputOptions.text.toString(),
+                    "",
+                    "OPEN"
+                    ))
+                })
         dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton -> dialog.cancel() })
         val b = dialogBuilder.create()
         b.show()
