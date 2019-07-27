@@ -12,11 +12,23 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import com.platform.lynch.servo.adapter.MenuAdapter
 import kotlinx.android.synthetic.main.activity_menu.*
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import org.jetbrains.anko.doAsync
+import kotlin.system.measureTimeMillis
 
 
 class MenuTab : TabFragment() {
 
     lateinit var menuAdapter: MenuAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        menuAdapter = MenuAdapter(activity)
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -25,10 +37,14 @@ class MenuTab : TabFragment() {
         return inflater!!.inflate(R.layout.activity_menu, container, false)
     }
 
+    private fun waitForTable() {
+        while ((activity as MainActivity).table == null) {}
+    }
+
     override fun onViewCreated(view: View?, @Nullable savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        menuAdapter = MenuAdapter(activity)
+        menuAdapter.refresh()
 
         rv_item_list?.layoutManager = LinearLayoutManager(activity)
         rv_item_list?.adapter = menuAdapter

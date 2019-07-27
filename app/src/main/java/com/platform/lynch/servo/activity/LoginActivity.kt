@@ -35,7 +35,6 @@ class LoginActivity : AppCompatActivity() {
 
         val mainIntent = Intent(this, MainActivity::class.java)
         mainIntent.putExtra("UserId", credentials!!.id)
-        mainIntent.putExtra("BusinessId", "00uoudimbcBaMgXYj356")
 
         startActivity(mainIntent)
 

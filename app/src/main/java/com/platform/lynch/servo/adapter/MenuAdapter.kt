@@ -52,7 +52,10 @@ class MenuAdapter(val activity: FragmentActivity) :
     override fun getItemCount() = items.size
 
     fun refresh() {
-        menuClient.get((activity as MainActivity)?.businessId!!)
+        if ((activity as MainActivity).table == null)
+            return
+
+        menuClient.get(activity.table!!.businessId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -79,7 +82,10 @@ class MenuAdapter(val activity: FragmentActivity) :
     }
 
     fun add(item: MenuItem) {
-        menuClient.add((activity as MainActivity).businessId!!, item)
+        if ((activity as MainActivity).table == null)
+            return
+
+        menuClient.add((activity).table!!.businessId, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -101,8 +107,10 @@ class MenuAdapter(val activity: FragmentActivity) :
     }
 
     fun placeOrder(item: Ticket) {
+        if ((activity as MainActivity).table == null)
+            return
 
-        ticketClient.add((activity as MainActivity).userId!!, item)
+        ticketClient.add((activity).userId!!, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
