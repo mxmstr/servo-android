@@ -2,14 +2,8 @@ package com.platform.lynch.servo.adapter
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.app.FragmentStatePagerAdapter
-import com.platform.lynch.servo.activity.MenuTab
-import com.platform.lynch.servo.activity.ScanTab
-import com.platform.lynch.servo.activity.TabFragment
-import com.platform.lynch.servo.activity.TicketTab
-import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
+import com.platform.lynch.servo.activity.*
 
 
 class TabAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager) {
@@ -19,7 +13,7 @@ class TabAdapter(manager: FragmentManager) : FragmentStatePagerAdapter(manager) 
             ScanTab.getInstance(0),
             MenuTab.getInstance(1),
             TicketTab.getInstance(2),
-            TicketTab.getInstance(3)
+            ProfileTab.getInstance(3)
         )
 
     override fun getItem(position: Int): Fragment {

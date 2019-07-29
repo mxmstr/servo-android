@@ -1,5 +1,7 @@
 package com.platform.lynch.servo.model
 
+import android.app.Activity
+import com.platform.lynch.servo.activity.MainActivity
 import io.reactivex.Completable
 import io.reactivex.Observable
 import retrofit2.Retrofit
@@ -14,12 +16,12 @@ interface TicketApiClient {
 
     companion object {
 
-        fun create(): TicketApiClient {
+        fun create(activity: Activity): TicketApiClient {
 
             val retrofit = Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("http://192.168.0.18:8080/")
+                    .baseUrl((activity as MainActivity).config!!.proxy.toString())
                     .build()
 
             return retrofit.create(TicketApiClient::class.java)

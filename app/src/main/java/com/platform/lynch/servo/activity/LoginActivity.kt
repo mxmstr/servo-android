@@ -23,11 +23,18 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
+    val config: Config? = Config(
+            "{CLIENT_ID}",
+            "com.okta.dev-486832:/implicit/callback",
+            "https://dev-486832.okta.com/oauth2/default",
+            "http://10.4.2.14:8080/"
+    )
+
     private var mOktaAuth: OktaAppAuth? = null
     private var credentials: UserInfo? = null
 
-    val loginClient by lazy { LoginApiClient.create() }
-    val registerClient by lazy { RegisterApiClient.create() }
+    val loginClient by lazy { LoginApiClient.create(this) }
+    val registerClient by lazy { RegisterApiClient.create(this) }
 
 
     private fun showFields() {

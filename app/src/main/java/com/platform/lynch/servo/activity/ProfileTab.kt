@@ -12,17 +12,12 @@ import com.platform.lynch.servo.R
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
-import com.google.zxing.integration.android.IntentResult
-import com.platform.lynch.servo.adapter.TicketAdapter
-import kotlinx.android.synthetic.main.activity_menu.*
-import kotlinx.android.synthetic.main.activity_scan.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import kotlin.concurrent.schedule
 import java.util.*
 
 
-
-
-class ScanTab : TabFragment() {
+class ProfileTab : TabFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,20 +25,15 @@ class ScanTab : TabFragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        return inflater!!.inflate(R.layout.activity_scan, container, false)
+        return inflater!!.inflate(R.layout.activity_profile, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        btnScan.setOnClickListener {
+        btnLogout.setOnClickListener {
             run {
-                IntentIntegrator(activity).initiateScan()
-            }
-        }
-        btnLeave.setOnClickListener {
-            run {
-                (activity as MainActivity).leaveTable()
+                activity.finish()
             }
         }
     }
@@ -65,20 +55,12 @@ class ScanTab : TabFragment() {
         refresh()
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-
-        val table = (activity as MainActivity).table
-
-        txtValue.text = if (table == null) "None" else table.id.toString()
-    }
-
     companion object {
 
         fun getInstance(position: Int): Fragment {
             val bundle = Bundle()
             bundle.putInt("pos", position)
-            val tabFragment = ScanTab()
+            val tabFragment = ProfileTab()
             tabFragment.arguments = bundle
             return tabFragment
         }

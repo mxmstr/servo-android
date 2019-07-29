@@ -1,5 +1,9 @@
 package com.platform.lynch.servo.model
 
+import android.app.Activity
+import android.content.Context
+import com.platform.lynch.servo.R
+import com.platform.lynch.servo.activity.MainActivity
 import io.reactivex.Completable
 import io.reactivex.Observable
 import retrofit2.Retrofit
@@ -16,12 +20,12 @@ interface MenuApiClient {
 
     companion object {
 
-        fun create(): MenuApiClient {
+        fun create(activity: Activity): MenuApiClient {
 
             val retrofit = Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("http://192.168.0.18:8080/")
+                    .baseUrl((activity as MainActivity).config!!.proxy.toString())
                     .build()
 
             return retrofit.create(MenuApiClient::class.java)

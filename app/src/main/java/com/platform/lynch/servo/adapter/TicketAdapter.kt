@@ -1,5 +1,6 @@
 package com.platform.lynch.servo.adapter
 
+import android.app.Activity
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
@@ -22,10 +23,10 @@ import kotlinx.android.synthetic.main.ticket_item.view.*
 import kotlinx.coroutines.runBlocking
 
 
-class TicketAdapter(val activity: FragmentActivity) :
+class TicketAdapter(val activity: Activity) :
         RecyclerView.Adapter<TicketAdapter.TicketViewHolder>() {
 
-    val ticketClient by lazy { TicketApiClient.create() }
+    val ticketClient by lazy { TicketApiClient.create(activity) }
     var tickets: ArrayList<Ticket> = ArrayList()
 
     init { refresh() }

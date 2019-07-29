@@ -1,5 +1,8 @@
 package com.platform.lynch.servo.model
 
+import android.app.Activity
+import com.platform.lynch.servo.activity.LoginActivity
+import com.platform.lynch.servo.activity.MainActivity
 import io.reactivex.Observable
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -13,12 +16,12 @@ interface RegisterApiClient {
 
     companion object {
 
-        fun create(): RegisterApiClient {
+        fun create(activity: Activity): RegisterApiClient {
 
             val retrofit = Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("http://192.168.0.18:8080/")
+                    .baseUrl((activity as LoginActivity).config!!.proxy.toString())
                     .build()
 
             return retrofit.create(RegisterApiClient::class.java)

@@ -9,11 +9,15 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import com.platform.lynch.servo.R
 import kotlinx.android.synthetic.main.activity_main.*
 import com.platform.lynch.servo.adapter.TabAdapter
+import com.platform.lynch.servo.model.Config
 import com.platform.lynch.servo.model.Table
 import com.platform.lynch.servo.model.TableApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -23,19 +27,33 @@ import java.util.*
 import kotlin.concurrent.timerTask
 
 
-
-
 class MainActivity : AppCompatActivity() {
+
+    val config: Config? = Config(
+            "{CLIENT_ID}",
+            "com.okta.dev-486832:/implicit/callback",
+            "https://dev-486832.okta.com/oauth2/default",
+            "http://10.4.2.14:8080/"
+            )
 
     var userId: String? = null
     var table: Table? = null
 
-    val tableClient by lazy { TableApiClient.create() }
+    val tableClient by lazy { TableApiClient.create(this) }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        /*resources.openRawResource(R.raw.okta_app_auth_config).apply {
+            //val gson = Gson()
+            //val map = HashMap<String, Any>()
+            val gson = Gson()
+            val config = gson.fromJson(this.readBytes().toString(Charsets.UTF_8), Config().javaClass)
+            //val config = gson.fromJson(this.readBytes().toString(Charsets.UTF_8), map.javaClass) as HashMap<String, Any>
+        }*/
+
 
         userId = intent.getStringExtra("UserId")
 

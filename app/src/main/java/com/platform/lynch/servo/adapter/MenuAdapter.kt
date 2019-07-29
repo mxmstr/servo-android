@@ -1,5 +1,6 @@
 package com.platform.lynch.servo.adapter
 
+import android.app.Activity
 import android.support.v4.app.FragmentActivity
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
@@ -21,11 +22,11 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.menu_item.view.*
 
 
-class MenuAdapter(val activity: FragmentActivity) :
+class MenuAdapter(val activity: Activity) :
         RecyclerView.Adapter<MenuAdapter.MenuViewHolder>() {
 
-    val menuClient by lazy { MenuApiClient.create() }
-    val ticketClient by lazy { TicketApiClient.create() }
+    val menuClient by lazy { MenuApiClient.create(activity) }
+    val ticketClient by lazy { TicketApiClient.create(activity) }
     var items: ArrayList<MenuItem> = ArrayList()
 
     init { refresh() }
