@@ -7,21 +7,21 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
-interface LoginApiClient {
+interface RegisterApiClient {
 
-    @POST("api/v1/authn") fun getUser(@Body user: OktaUser): Observable<LoginResponse>
+    @POST("api/customer") fun createUser(@Body user: User): Observable<User>
 
     companion object {
 
-        fun create(): LoginApiClient {
+        fun create(): RegisterApiClient {
 
             val retrofit = Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl("https://dev-486832.okta.com/")
+                    .baseUrl("http://192.168.0.18:8080/")
                     .build()
 
-            return retrofit.create(LoginApiClient::class.java)
+            return retrofit.create(RegisterApiClient::class.java)
         }
     }
 }

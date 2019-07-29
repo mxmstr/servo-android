@@ -13,12 +13,14 @@
         android:layout_height="wrap_content"
         android:text="Current table: "
         android:id="@+id/txtValueLabel"
+        android:textSize="30dp"
         />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="None"
         android:id="@+id/txtValue"
+        android:textSize="30dp"
         app:layout_constraintLeft_toRightOf="@id/txtValueLabel"
         />
     <Button

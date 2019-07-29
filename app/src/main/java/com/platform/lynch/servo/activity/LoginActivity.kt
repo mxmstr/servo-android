@@ -4,16 +4,18 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import com.okta.appauth.android.OktaAppAuth
 
 import android.widget.Toast
+import com.google.zxing.integration.android.IntentIntegrator
 import com.platform.lynch.servo.*
-import com.platform.lynch.servo.model.LoginApiClient
-import com.platform.lynch.servo.model.LoginResponse
-import com.platform.lynch.servo.model.User
-import com.platform.lynch.servo.model.UserInfo
+import com.platform.lynch.servo.model.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_login.*
+import kotlinx.android.synthetic.main.activity_scan.*
+import okhttp3.ResponseBody
 
 import retrofit2.Response
 
@@ -24,12 +26,33 @@ class LoginActivity : AppCompatActivity() {
     private var mOktaAuth: OktaAppAuth? = null
     private var credentials: UserInfo? = null
 
-    val client by lazy { LoginApiClient.create() }
+    val loginClient by lazy { LoginApiClient.create() }
+    val registerClient by lazy { RegisterApiClient.create() }
 
 
-    fun onUserLogin(result: Response<LoginResponse>) {
+    private fun showFields() {
 
-        credentials = result.body()!!.data.user
+        email.visibility = View.VISIBLE
+        password.visibility = View.VISIBLE
+        login.visibility = View.VISIBLE
+        register.visibility = View.VISIBLE
+        progress_bar.visibility = View.GONE
+
+    }
+
+    private fun showProgress() {
+
+        email.visibility = View.GONE
+        password.visibility = View.GONE
+        login.visibility = View.GONE
+        register.visibility = View.GONE
+        progress_bar.visibility = View.VISIBLE
+
+    }
+
+    private fun onUserLogin(result: LoginData) {
+
+        credentials = result.user
 
         Log.v("LoginActivity", "success")
 
@@ -40,6 +63,52 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    private fun clientLogin() {
+
+        showProgress()
+        auth_message.text = "Logging in..."
+
+        loginClient.getUser(OktaUser(email.text.toString(), password.text.toString()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            onUserLogin(result.data)
+                            showFields()
+                            auth_message.text = ""
+                        },
+                        { throwable ->
+                            Toast.makeText(this, "Login error: ${throwable.message}", Toast.LENGTH_LONG).show()
+                            showFields()
+                            auth_message.text = ""
+                        }
+                )
+
+    }
+
+    private fun clientRegister() {
+
+        showProgress()
+        auth_message.text = "Registering..."
+
+        registerClient.createUser(User(email.text.toString(), password.text.toString()))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
+                            clientLogin()
+                            showFields()
+                            auth_message.text = ""
+                        },
+                        { throwable ->
+                            Toast.makeText(this, "Register error.", Toast.LENGTH_LONG).show()
+                            showFields()
+                            auth_message.text = ""
+                        }
+                )
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,19 +116,18 @@ class LoginActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_login)
 
-        val client by lazy { LoginApiClient.create() }
 
-        client.getUser(User("lynch.er18+test0@gmail.com", "aaaAAA1!"))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        { result ->
-                            onUserLogin(result)
-                        },
-                        { throwable ->
-                            Toast.makeText(this, "Login error: ${throwable.message}", Toast.LENGTH_LONG).show()
-                        }
-                )
+        login.setOnClickListener {
+            run {
+                clientLogin()
+            }
+        }
+
+        register.setOnClickListener {
+            run {
+                clientRegister()
+            }
+        }
 
 //        val oktaUser = UserBuilder.instance()
 //                .setEmail("lynch.er18@gmail.com")

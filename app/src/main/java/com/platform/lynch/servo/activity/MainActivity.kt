@@ -23,6 +23,8 @@ import java.util.*
 import kotlin.concurrent.timerTask
 
 
+
+
 class MainActivity : AppCompatActivity() {
 
     var userId: String? = null
@@ -73,11 +75,15 @@ class MainActivity : AppCompatActivity() {
         tableClient.update(table!!.id, table!!).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        { txtValue.text = "None" },//Toast.makeText(this@MainActivity, "Table left.", Toast.LENGTH_LONG).show() },
+                        {  },//Toast.makeText(this@MainActivity, "Table left.", Toast.LENGTH_LONG).show() },
                         { throwable ->
                             Toast.makeText(this@MainActivity, "Update error: ${throwable.message}", Toast.LENGTH_LONG).show()
                         }
                 )
+
+        txtValue.text = "None"
+        table = null
+
     }
 
     fun claimTable(result: Table) {
@@ -103,7 +109,6 @@ class MainActivity : AppCompatActivity() {
                 )
 
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 

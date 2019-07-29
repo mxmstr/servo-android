@@ -20,6 +20,8 @@ import kotlin.concurrent.schedule
 import java.util.*
 
 
+
+
 class ScanTab : TabFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,29 @@ class ScanTab : TabFragment() {
                 (activity as MainActivity).leaveTable()
             }
         }
+    }
+
+    fun refresh() {
+        if (fragmentManager != null) {
+            fragmentManager
+                    .beginTransaction()
+                    .detach(this)
+                    .attach(this)
+                    .commit()
+        }
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+
+        super.setUserVisibleHint(isVisibleToUser)
+
+        refresh()
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        txtValue.text = (activity as MainActivity).table?.id.toString()
     }
 
     companion object {
