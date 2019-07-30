@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             "{CLIENT_ID}",
             "com.okta.dev-486832:/implicit/callback",
             "https://dev-486832.okta.com/oauth2/default",
-            "http://10.4.2.14:8080/"
+            "http://192.168.0.18:8080/"
             )
 
     var userId: String? = null
@@ -45,15 +45,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        /*resources.openRawResource(R.raw.okta_app_auth_config).apply {
-            //val gson = Gson()
-            //val map = HashMap<String, Any>()
-            val gson = Gson()
-            val config = gson.fromJson(this.readBytes().toString(Charsets.UTF_8), Config().javaClass)
-            //val config = gson.fromJson(this.readBytes().toString(Charsets.UTF_8), map.javaClass) as HashMap<String, Any>
-        }*/
-
 
         userId = intent.getStringExtra("UserId")
 
@@ -93,14 +84,17 @@ class MainActivity : AppCompatActivity() {
         tableClient.update(table!!.id, table!!).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        {  },//Toast.makeText(this@MainActivity, "Table left.", Toast.LENGTH_LONG).show() },
+                        {
+                            txtValue.text = "None"
+                            table = null
+                            Toast.makeText(this@MainActivity, "Table left.", Toast.LENGTH_LONG).show()
+                        },
                         { throwable ->
                             Toast.makeText(this@MainActivity, "Update error: ${throwable.message}", Toast.LENGTH_LONG).show()
                         }
                 )
 
-        txtValue.text = "None"
-        table = null
+
 
     }
 
@@ -118,8 +112,8 @@ class MainActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         {
-                            Toast.makeText(this@MainActivity, "Table claimed.", Toast.LENGTH_LONG).show()
                             txtValue.text = table!!.id.toString()
+                            Toast.makeText(this@MainActivity, "Table claimed.", Toast.LENGTH_LONG).show()
                         },
                         { throwable ->
                             Toast.makeText(this@MainActivity, "Update error: ${throwable.message}", Toast.LENGTH_LONG).show()

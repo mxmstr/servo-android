@@ -27,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
             "{CLIENT_ID}",
             "com.okta.dev-486832:/implicit/callback",
             "https://dev-486832.okta.com/oauth2/default",
-            "http://10.4.2.14:8080/"
+            "http://192.168.0.18:8080/"
     )
 
     private var mOktaAuth: OktaAppAuth? = null

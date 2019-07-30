@@ -25,4 +25,14 @@ abstract class TabFragment : Fragment() {
         return inflater!!.inflate(R.layout.fragment_tab, container, false)
     }
 
+    fun refresh() {
+        if (fragmentManager != null) {
+            fragmentManager
+                    .beginTransaction()
+                    .detach(this)
+                    .attach(this)
+                    .commit()
+        }
+    }
+
 }

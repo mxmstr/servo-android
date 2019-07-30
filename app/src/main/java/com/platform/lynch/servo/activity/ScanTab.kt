@@ -38,23 +38,15 @@ class ScanTab : TabFragment() {
 
         btnScan.setOnClickListener {
             run {
-                IntentIntegrator(activity).initiateScan()
+                if ((activity as MainActivity).table == null)
+                    IntentIntegrator(activity).initiateScan()
             }
         }
         btnLeave.setOnClickListener {
             run {
+                if ((activity as MainActivity).table != null)
                 (activity as MainActivity).leaveTable()
             }
-        }
-    }
-
-    fun refresh() {
-        if (fragmentManager != null) {
-            fragmentManager
-                    .beginTransaction()
-                    .detach(this)
-                    .attach(this)
-                    .commit()
         }
     }
 

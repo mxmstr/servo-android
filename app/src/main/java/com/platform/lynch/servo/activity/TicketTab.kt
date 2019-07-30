@@ -44,6 +44,13 @@ class TicketTab : TabFragment() {
 
     }
 
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+
+        super.setUserVisibleHint(isVisibleToUser)
+
+        refresh()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater!!.inflate(R.menu.buttons, menu)

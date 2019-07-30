@@ -38,16 +38,6 @@ class ProfileTab : TabFragment() {
         }
     }
 
-    fun refresh() {
-        if (fragmentManager != null) {
-            fragmentManager
-                    .beginTransaction()
-                    .detach(this)
-                    .attach(this)
-                    .commit()
-        }
-    }
-
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
 
         super.setUserVisibleHint(isVisibleToUser)
