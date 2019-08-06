@@ -14,9 +14,9 @@ https://docs.google.com/presentation/d/1KBoNeWJiPTsLH2tVn1RpcKJelRB2MnoCL5Gw5ZLM
 
 # Screenshots
 
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/login.PNG)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/table.PNG)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/menu.PNG)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/history.PNG)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/profile.PNG)
+![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/login.png)
+![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/table.png)
+![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/menu.png)
+![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/history.png)
+![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/profile.png)
 
