@@ -1,27 +1,20 @@
-# Okta Kotlin Android CRUD app
+# Configuration
 
-This is the Android Studio source for the client side of the Okta Kotlin Android CRUD tutorial
+To run the project, download and install Android Studio:
 
-## Setup
+https://developer.android.com/studio
 
-You need to fill out `app/src/main/res/raw/okta_app_auth_config.json` with your Okta Application details.
-It should look like this:
+Open the project in Android Studio and edit the `proxy` field in `Config.kt` to match the address of the Spring Boot server.
 
-```
-{
-  "client_id": "{CLIENT_ID}",
-  "redirect_uri": "com.okta.dev-486832:/implicit/callback",
-  "scopes": [
-    "openid",
-    "profile",
-    "offline_access"
-  ],
-  "issuer_uri": "https://dev-486832.okta.com/oauth2/default"
-}
-```
+# Wireframes and User Stories
 
-Note you also need to have the *server* setup and running locally for this app to work.
+https://docs.google.com/presentation/d/1KBoNeWJiPTsLH2tVn1RpcKJelRB2MnoCL5Gw5ZLMCSk/edit?usp=sharing
 
-## Running
+# Screenshots
 
-You should be able to run this on an emulator just by pressing Play in Android Studio.
+![alt text](https://github.com/mxmstr/servo-backend/blob/master/screenshots/login.PNG)
+![alt text](https://github.com/mxmstr/servo-backend/blob/master/screenshots/register.PNG)
+![alt text](https://github.com/mxmstr/servo-backend/blob/master/screenshots/menu.PNG)
+![alt text](https://github.com/mxmstr/servo-backend/blob/master/screenshots/tables.PNG)
+![alt text](https://github.com/mxmstr/servo-backend/blob/master/screenshots/tickets.PNG)
+
