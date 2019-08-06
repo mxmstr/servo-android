@@ -29,12 +29,7 @@ import kotlin.concurrent.timerTask
 
 class MainActivity : AppCompatActivity() {
 
-    val config: Config? = Config(
-            "{CLIENT_ID}",
-            "com.okta.dev-486832:/implicit/callback",
-            "https://dev-486832.okta.com/oauth2/default",
-            "http://192.168.0.18:8080/"
-            )
+    val config: Config = Config()
 
     var userId: String? = null
     var table: Table? = null
