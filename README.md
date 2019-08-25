@@ -8,15 +8,17 @@ Open the project in Android Studio and edit the `proxy` field in `Config.kt` to 
 
 Create a virtual device or connect a real device via usb to run.
 
+Sample credentials: joe@email.com | aaaAAA1!
+
 # Wireframes and User Stories
 
 https://docs.google.com/presentation/d/1KBoNeWJiPTsLH2tVn1RpcKJelRB2MnoCL5Gw5ZLMCSk/edit?usp=sharing
 
 # Screenshots
 
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/login.png)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/table.png)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/menu.png)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/history.png)
-![alt text](https://github.com/mxmstr/servo-android/blob/master/screenshots/profile.png)
+![alt text](https://raw.githubusercontent.com/mxmstr/servo-android/master/screenshots/login.png)
+![alt text](https://raw.githubusercontent.com/mxmstr/servo-android/master/screenshots/table.png)
+![alt text](https://raw.githubusercontent.com/mxmstr/servo-android/master/screenshots/menu.png)
+![alt text](https://raw.githubusercontent.com/mxmstr/servo-android/master/screenshots/history.png)
+![alt text](https://raw.githubusercontent.com/mxmstr/servo-android/master/screenshots/profile.png)
 
