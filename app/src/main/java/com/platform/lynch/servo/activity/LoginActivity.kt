@@ -15,6 +15,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_login.*
 import kotlinx.android.synthetic.main.activity_scan.*
+import okhttp3.Credentials
 import okhttp3.ResponseBody
 
 import retrofit2.Response
@@ -23,10 +24,7 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
-    val config: Config = Config()
-
     private var mOktaAuth: OktaAppAuth? = null
-    private var credentials: UserInfo? = null
 
     val loginClient by lazy { LoginApiClient.create(this) }
     val registerClient by lazy { RegisterApiClient.create(this) }
@@ -52,16 +50,38 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
-    private fun onUserLogin(result: LoginData) {
+    private fun onUserLogin(result: LoginResponse) {
 
-        credentials = result.user
+        Session.userId = result.data.user.id
+        auth_message.text = "Getting token..."
 
-        Log.v("LoginActivity", "success")
+        var credentials = Credentials.basic(Config().client_id, Config().client_secret)
 
-        val mainIntent = Intent(this, MainActivity::class.java)
-        mainIntent.putExtra("UserId", credentials!!.id)
+        loginClient.getToken(credentials, "password", "openid", email.text.toString(), password.text.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        { result ->
 
-        startActivity(mainIntent)
+                            Log.v("LoginActivity", "success")
+
+                            Session.sessionToken = "Bearer " + result.access_token
+
+                            val mainIntent = Intent(this, MainActivity::class.java)
+                            startActivity(mainIntent)
+
+                            showFields()
+                            auth_message.text = ""
+
+                        },
+                        { throwable ->
+                            Toast.makeText(this, "Token get error: ${throwable.message}", Toast.LENGTH_LONG).show()
+                            showFields()
+                            auth_message.text = ""
+                        }
+                )
+
+
 
     }
 
@@ -70,16 +90,15 @@ class LoginActivity : AppCompatActivity() {
         showProgress()
         auth_message.text = "Logging in..."
 
-        loginClient.getUser(OktaUser(email.text.toString(), password.text.toString()))
+        loginClient.login(OktaUser("password", "openid", email.text.toString(), password.text.toString()))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result ->
-                            onUserLogin(result.data)
-                            showFields()
-                            auth_message.text = ""
+                            onUserLogin(result)
                         },
                         { throwable ->
+                            Log.e("ERROR", throwable.message)
                             Toast.makeText(this, "Login error: ${throwable.message}", Toast.LENGTH_LONG).show()
                             showFields()
                             auth_message.text = ""
@@ -131,48 +150,5 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-//        val oktaUser = UserBuilder.instance()
-//                .setEmail("lynch.er18@gmail.com")
-//                .setPassword("65486541gG#".toCharArray())
-//                .buildAndCreate(client)
-
-//        Log.e("LoginActivity", oktaUser.id)
-//
-//            val result = Business()
-
-
-        /*mOktaAuth!!.init(
-                this,
-                object : OktaAppAuth.OktaAuthListener {
-                    override fun onSuccess() {
-                        Log.v("LoginActivity", "Success")
-                        auth_button.visibility = View.VISIBLE
-                        auth_message.visibility = View.GONE
-                        progress_bar.visibility = View.GONE
-                    }
-
-                    override fun onTokenFailure(ex: AuthorizationException) {
-                        Log.v("LoginActivity", ex.toString())
-                        auth_message.text = ex.toString()
-                        progress_bar.visibility = View.GONE
-                        auth_button.visibility = View.GONE
-                    }
-                }
-        )
-
-        val button = findViewById(R.id.auth_button) as Button
-        button.setOnClickListener { v ->
-            val completionIntent = Intent(v.context, MainActivity::class.java)
-            val cancelIntent = Intent(v.context, LoginActivity::class.java)
-
-            cancelIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-
-
-            mOktaAuth!!.login(
-                    v.context,
-                    PendingIntent.getActivity(v.context, 0, completionIntent, 0),
-                    PendingIntent.getActivity(v.context, 0, cancelIntent, 0)
-            )
-        }*/
     }
 }

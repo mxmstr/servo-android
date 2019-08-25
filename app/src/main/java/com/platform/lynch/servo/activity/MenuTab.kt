@@ -11,6 +11,7 @@ import com.platform.lynch.servo.R
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.platform.lynch.servo.adapter.MenuAdapter
+import com.platform.lynch.servo.model.Session
 import kotlinx.android.synthetic.main.activity_menu.*
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
@@ -35,10 +36,6 @@ class MenuTab : TabFragment() {
         setHasOptionsMenu(true)
 
         return inflater!!.inflate(R.layout.activity_menu, container, false)
-    }
-
-    private fun waitForTable() {
-        while ((activity as MainActivity).table == null) {}
     }
 
     override fun onViewCreated(view: View?, @Nullable savedInstanceState: Bundle?) {

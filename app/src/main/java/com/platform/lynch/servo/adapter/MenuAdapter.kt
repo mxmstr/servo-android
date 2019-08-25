@@ -12,11 +12,8 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.platform.lynch.servo.activity.MainActivity
-import com.platform.lynch.servo.model.MenuApiClient
-import com.platform.lynch.servo.model.MenuItem
 import com.platform.lynch.servo.R
-import com.platform.lynch.servo.model.Ticket
-import com.platform.lynch.servo.model.TicketApiClient
+import com.platform.lynch.servo.model.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.menu_item.view.*
@@ -53,10 +50,10 @@ class MenuAdapter(val activity: Activity) :
     override fun getItemCount() = items.size
 
     fun refresh() {
-        if ((activity as MainActivity).table == null)
+        if (!Session.seated)
             return
 
-        menuClient.get(activity.table!!.businessId)
+        menuClient.get(Session.sessionToken, Session.table.businessId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -73,7 +70,7 @@ class MenuAdapter(val activity: Activity) :
     }
 
     fun update(item: MenuItem) {
-        menuClient.update(item.id, item)
+        menuClient.update(Session.sessionToken, item.id, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -83,10 +80,10 @@ class MenuAdapter(val activity: Activity) :
     }
 
     fun add(item: MenuItem) {
-        if ((activity as MainActivity).table == null)
+        if (!Session.seated)
             return
 
-        menuClient.add((activity).table!!.businessId, item)
+        menuClient.add(Session.sessionToken, Session.table.businessId, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -97,7 +94,7 @@ class MenuAdapter(val activity: Activity) :
 
     fun delete(item: MenuItem) {
 
-        menuClient.delete(item.id)
+        menuClient.delete(Session.sessionToken, item.id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ refresh() }, { throwable ->
@@ -108,10 +105,10 @@ class MenuAdapter(val activity: Activity) :
     }
 
     fun placeOrder(item: Ticket) {
-        if ((activity as MainActivity).table == null)
+        if (!Session.seated)
             return
 
-        ticketClient.add((activity).userId!!, item)
+        ticketClient.add(Session.sessionToken, Session.userId, item)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -147,7 +144,7 @@ class MenuAdapter(val activity: Activity) :
         dialogBuilder.setMessage(item.price)
         dialogBuilder.setPositiveButton("Confirm", { dialog, whichButton -> placeOrder(
                 Ticket(0,
-                    (activity as MainActivity).userId!!,
+                    Session.userId,
                     item.id,
                     item.name,
                     inputQuantity.text.toString(),

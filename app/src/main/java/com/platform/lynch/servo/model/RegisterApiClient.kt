@@ -21,7 +21,7 @@ interface RegisterApiClient {
             val retrofit = Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl((activity as LoginActivity).config!!.proxy.toString())
+                    .baseUrl(Config().proxy)
                     .build()
 
             return retrofit.create(RegisterApiClient::class.java)

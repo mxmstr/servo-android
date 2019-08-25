@@ -14,6 +14,7 @@ import android.widget.Toast
 import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import com.platform.lynch.servo.adapter.TicketAdapter
+import com.platform.lynch.servo.model.Session
 import kotlinx.android.synthetic.main.activity_menu.*
 import kotlinx.android.synthetic.main.activity_scan.*
 import kotlin.concurrent.schedule
@@ -38,14 +39,14 @@ class ScanTab : TabFragment() {
 
         btnScan.setOnClickListener {
             run {
-                if ((activity as MainActivity).table == null)
+                if (!Session.seated)
                     IntentIntegrator(activity).initiateScan()
             }
         }
         btnLeave.setOnClickListener {
             run {
-                if ((activity as MainActivity).table != null)
-                (activity as MainActivity).leaveTable()
+                if (Session.seated)
+                    (activity as MainActivity).leaveTable()
             }
         }
     }
@@ -60,9 +61,7 @@ class ScanTab : TabFragment() {
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
-        val table = (activity as MainActivity).table
-
-        txtValue.text = if (table == null) "None" else table.id.toString()
+        txtValue.text = if (!Session.seated) "None" else Session.table.id.toString()
     }
 
     companion object {

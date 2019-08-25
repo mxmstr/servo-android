@@ -12,11 +12,8 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import com.platform.lynch.servo.activity.MainActivity
-import com.platform.lynch.servo.model.MenuApiClient
-import com.platform.lynch.servo.model.MenuItem
 import com.platform.lynch.servo.R
-import com.platform.lynch.servo.model.Ticket
-import com.platform.lynch.servo.model.TicketApiClient
+import com.platform.lynch.servo.model.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.ticket_item.view.*
@@ -51,7 +48,7 @@ class TicketAdapter(val activity: Activity) :
     override fun getItemCount() = tickets.size
 
     fun refresh() {
-            ticketClient.get((activity as MainActivity)?.userId!!)
+            ticketClient.get(Session.sessionToken, Session.userId)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(

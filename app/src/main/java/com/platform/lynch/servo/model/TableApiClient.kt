@@ -13,9 +13,9 @@ import retrofit2.http.*
 
 interface TableApiClient {
 
-    @GET("api/table") fun get(@Header("UserId") token: String): Observable<List<Table>>
-    @GET("api/table/{id}") fun getById(@Path("id")id: Long) : Observable<Table>
-    @PUT("api/table/{id}") fun update(@Path("id")id: Long, @Body table: Table) : Observable<Response<Any>>
+    @GET("api/table") fun get(@Header("Authorization") token: String, @Header("UserId") userId: String): Observable<List<Table>>
+    @GET("api/table/{id}") fun getById(@Header("Authorization") token: String, @Path("id")id: Long) : Observable<Table>
+    @PUT("api/table/{id}") fun update(@Header("Authorization") token: String, @Path("id")id: Long, @Body table: Table) : Observable<Response<Any>>
 
     companion object {
 
@@ -24,7 +24,7 @@ interface TableApiClient {
             val retrofit = Retrofit.Builder()
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
-                    .baseUrl((activity as MainActivity).config!!.proxy.toString())
+                    .baseUrl(Config().proxy)
                     .build()
 
             return retrofit.create(TableApiClient::class.java)

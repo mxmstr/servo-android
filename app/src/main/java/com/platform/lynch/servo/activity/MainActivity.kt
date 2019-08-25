@@ -18,6 +18,7 @@ import com.platform.lynch.servo.R
 import kotlinx.android.synthetic.main.activity_main.*
 import com.platform.lynch.servo.adapter.TabAdapter
 import com.platform.lynch.servo.model.Config
+import com.platform.lynch.servo.model.Session
 import com.platform.lynch.servo.model.Table
 import com.platform.lynch.servo.model.TableApiClient
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -29,11 +30,6 @@ import kotlin.concurrent.timerTask
 
 class MainActivity : AppCompatActivity() {
 
-    val config: Config = Config()
-
-    var userId: String? = null
-    var table: Table? = null
-
     val tableClient by lazy { TableApiClient.create(this) }
 
 
@@ -41,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        userId = intent.getStringExtra("UserId")
+        //userId = intent.getStringExtra("UserId")
 
 
         setSupportActionBar(toolbar)
@@ -53,12 +49,12 @@ class MainActivity : AppCompatActivity() {
 
         Timer().schedule(timerTask {
 
-            tableClient.get(userId!!).subscribeOn(Schedulers.io())
+            tableClient.get(Session.sessionToken, Session.userId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         { result ->
-                            table = result[0]
-                            txtValue.text = table!!.id.toString()
+                            Session.table = result[0]
+                            txtValue.text = Session.table.id.toString()
                         },
                         { error ->
                             Log.e("ERRORS", error.message)
@@ -72,16 +68,16 @@ class MainActivity : AppCompatActivity() {
 
     fun leaveTable() {
 
-        if (table == null)
+        if (!Session.seated)
             return
 
-        table!!.customerId = null
-        tableClient.update(table!!.id, table!!).subscribeOn(Schedulers.io())
+        Session.table.customerId = null
+        tableClient.update(Session.sessionToken, Session.table.id, Session.table).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         {
                             txtValue.text = "None"
-                            table = null
+                            Session.seated = false
                             Toast.makeText(this@MainActivity, "Table left.", Toast.LENGTH_LONG).show()
                         },
                         { throwable ->
@@ -100,14 +96,15 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        table = result
-        table!!.customerId = userId!!
+        Session.table = result
+        Session.table.customerId = Session.userId
 
-        tableClient.update(table!!.id, table!!).subscribeOn(Schedulers.io())
+        tableClient.update(Session.sessionToken, Session.table.id, Session.table).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         {
-                            txtValue.text = table!!.id.toString()
+                            txtValue.text = Session.table.id.toString()
+                            Session.seated = true
                             Toast.makeText(this@MainActivity, "Table claimed.", Toast.LENGTH_LONG).show()
                         },
                         { throwable ->
@@ -125,7 +122,7 @@ class MainActivity : AppCompatActivity() {
 
             if(result.contents != null){
 
-                tableClient.getById(result.contents.toLong())
+                tableClient.getById(Session.sessionToken, result.contents.toLong())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
@@ -146,93 +143,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-//class MainActivity : AppCompatActivity() {
-//
-//    var userId: String? = null
-//    var businessId: String? = null
-//
-//    lateinit var menuAdapter: MenuAdapter
-//
-//    fun readAuthState(): AuthState {
-//        val authPrefs = getSharedPreferences("OktaAppAuthState", Context.MODE_PRIVATE)
-//        val stateJson = authPrefs.getString("state", "")
-//        return if (!stateJson!!.isEmpty()) {
-//            try {
-//                AuthState.jsonDeserialize(stateJson)
-//            } catch (exp: org.json.JSONException) {
-//                AuthState()
-//            }
-//
-//        } else {
-//            AuthState()
-//        }
-//    }
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
-//
-//        userId = intent.getStringExtra("UserId")
-//        businessId = intent.getStringExtra("BusinessId")
-//
-//
-//        menuAdapter = MenuAdapter(this)
-//
-//        rv_item_list.layoutManager = LinearLayoutManager(this)
-//        rv_item_list.adapter = menuAdapter
-//
-//        //fab.setOnClickListener{ showNewDialog() }
-//    }
-//
-//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        val inflater = menuInflater
-//        inflater.inflate(R.menu.buttons, menu)
-//        return true
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-//        R.id.refresh -> {
-//            menuAdapter.refresh()
-//            Toast.makeText(this.baseContext, "Refreshed", Toast.LENGTH_LONG).show()
-//            true
-//        }
-//        else -> {
-//            super.onOptionsItemSelected(item)
-//        }
-//    }
-//
-////    fun showNewDialog() {
-////        val dialogBuilder = AlertDialog.Builder(this)
-////
-////        val layout = LinearLayout(this@MainActivity)
-////        layout.layoutParams = LinearLayout.LayoutParams(
-////                LinearLayout.LayoutParams.MATCH_PARENT,
-////                LinearLayout.LayoutParams.MATCH_PARENT)
-////        layout.orientation = LinearLayout.VERTICAL
-////
-////        val inputQuantity = EditText(this)
-////        val inputOptions = EditText(this)
-////        inputQuantity.hint = "Quantity"
-////        inputOptions.hint = "Options"
-////        layout.addView(inputQuantity)
-////        layout.addView(inputOptions)
-////
-////        dialogBuilder.setView(layout)
-////
-////
-////        dialogBuilder.setTitle("New Order")
-////        dialogBuilder.setMessage("Enter Name Below")
-////        dialogBuilder.setPositiveButton("Save", { dialog, whichButton ->
-////            //menuAdapter.add(com.platform.lynch.servo.model.MenuItem(0, layout.text.toString()))
-////        })
-////        dialogBuilder.setNegativeButton("Cancel", { dialog, whichButton ->
-////            //pass
-////        })
-////        val b = dialogBuilder.create()
-////        b.show()
-////    }
-//
-//}
